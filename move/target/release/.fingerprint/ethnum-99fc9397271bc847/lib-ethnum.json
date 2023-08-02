@@ -1,0 +1,1 @@
+{"rustc":2347157018072859861,"features":"[]","target":13350283083635876261,"profile":6269190295429226618,"path":15155267628558220333,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release\\.fingerprint\\ethnum-99fc9397271bc847\\dep-lib-ethnum"}}],"rustflags":["-C","link-arg=/STACK:8000000"],"metadata":6645279078265627752,"config":2202906307356721367,"compile_kind":0}

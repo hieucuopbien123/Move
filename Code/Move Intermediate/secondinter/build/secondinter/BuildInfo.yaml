@@ -1,0 +1,22 @@
+---
+compiled_package_info:
+  package_name: secondinter
+  address_alias_instantiation:
+    std: "00000000000000000000000000000001"
+  source_digest: B8D744A97F89727FFC8D48490310E157192733FA9ADC72C904CA6A511A6CBB4A
+  build_flags:
+    dev_mode: true
+    test_mode: true
+    generate_docs: false
+    generate_abis: false
+    install_dir: ~
+    force_recompilation: false
+    lock_file: ~
+    additional_named_addresses: {}
+    architecture: ~
+    fetch_deps_only: false
+    skip_fetch_latest_git_deps: false
+    bytecode_version: ~
+dependencies:
+  - MoveNursery
+  - MoveStdlib

@@ -1,0 +1,1 @@
+{"rustc":2347157018072859861,"features":"[]","target":3192904599423556814,"profile":6269190295429226618,"path":11842312928150166938,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release\\.fingerprint\\fixedbitset-3f16252bf345ce6b\\dep-lib-fixedbitset"}}],"rustflags":["-C","link-arg=/STACK:8000000"],"metadata":3761209694549595741,"config":2202906307356721367,"compile_kind":0}

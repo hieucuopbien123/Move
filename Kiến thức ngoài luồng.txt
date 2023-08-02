@@ -1,0 +1,10 @@
+-> Move được dùng trong các blockchain Diem, Aptos, Sui. 
+Move (Rust-based lang) ở mỗi blockchain có nhiều điểm khác nhau. VD bản Move của Sui xác định rõ object thuộc về ai, immutable or not, còn Aptos thì không. Do đó có nhiều version docs của Move trong từng blockchain
+
+Move hoàn chỉnh hơn solidity. Static typing giúp phát hiện các lỗi ẩn. Các công đoạn tương tác SM và connect ví đều được tối ưu.
+
+-> Aptos là 1 blockchain layer1. Token APT. Ví aptos riêng. Aptos có khả năng mở rộng tới 160000 TPS, phí gas rẻ. 
+
+Aptos dễ dàng hơn khi thao tác với NFT. 
+
+

@@ -1,0 +1,1 @@
+{"rustc":2347157018072859861,"features":"[]","target":8958430831389049860,"profile":6269190295429226618,"path":3585503050574784781,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release\\.fingerprint\\deunicode-e953b0202b7a359a\\dep-lib-deunicode"}}],"rustflags":["-C","link-arg=/STACK:8000000"],"metadata":11283005078225043821,"config":2202906307356721367,"compile_kind":0}

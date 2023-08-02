@@ -1,0 +1,11 @@
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\codespan-2d8b969e2b85ac59.rmeta: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\file.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\index.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\location.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\span.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\libcodespan-2d8b969e2b85ac59.rlib: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\file.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\index.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\location.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\span.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\codespan-2d8b969e2b85ac59.d: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\file.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\index.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\location.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\span.rs
+
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\lib.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\file.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\index.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\location.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\codespan-0.11.1\src\span.rs:

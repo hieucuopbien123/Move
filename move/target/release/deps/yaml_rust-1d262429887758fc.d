@@ -1,0 +1,11 @@
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\yaml_rust-1d262429887758fc.rmeta: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\emitter.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\parser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\scanner.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\yaml.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\libyaml_rust-1d262429887758fc.rlib: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\emitter.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\parser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\scanner.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\yaml.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\yaml_rust-1d262429887758fc.d: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\emitter.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\parser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\scanner.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\yaml.rs
+
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\lib.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\emitter.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\parser.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\scanner.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\yaml-rust-0.4.5\src\yaml.rs:

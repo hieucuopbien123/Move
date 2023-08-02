@@ -1,0 +1,204 @@
+Move
+Move gốc được tạo bởi Diem. Aptos cũng dùng Move để viết SM nhưng aptos chỉ là framework thôi. Cũng như nodejs là framework của JS v
+
+
+
+# Basic
+-> Setup move thuần của Diem:
+Có move-analyzer extension hỗ trợ code move.
+
+Để compile move cần tool move-cli. Nó giống như khi cài hardhat --global là dùng được build, test, run, publish với file config xác định.
+
+Tut chuẩn: https://www.youtube.com/watch?v=jeaEPNxSun0&list=PLCehwWkztHkJxLLleH1OXojVgldJ4OXoC => tất cả các docs chuẩn khác đều gặp vấn đề
+Doc ngôn ngữ chuẩn (k tính phần cài đặt lỗi): https://diem.github.io/move/modules-and-scripts.html
+
+Cài move-cli rất rối. Thậm chí docs còn hướng dẫn lệnh sai éo thèm update. Có 2 bản cài là diem/git.com hiển thị "move-cli 0.1.0" và move-language/move.git hiển thị "Move 0.1.0 CLI frontend for Move compiler and VM" (Phải cài cargo trước)
+Doc bản 1: https://github.com/diem/move/tree/main/language/documentation/tutorial
+Doc bản 2: https://github.com/diem/move/tree/main/language/tools/move-cli
+=> Bản 2 cài éo chạy được, phải dùng bản 1
+
+*** Chạy command trong tutorial vẫn chưa chắc được, 1 trong 2 command sau là đúng (cài qua powershell):
+1) cargo install --git https://github.com/diem/diem move-cli
+Hoặc cargo install --git https://github.com/diem/move move-cli --branch main
+2) Cách 2 là giống trong docs:
+git clone https://github.com/diem/move.git -> ... -> cargo install --path language/tools/move-cli
+
+Hiện tại ta đang lưu bản move chạy được ở thư mục move. Để cài move từ nó chỉ cần:
+cargo install --path language/tools/move-cli
+
+*** Lệnh move trùng với lệnh move của microsoft powershell, phải mở git bash mới gọi được
+
+-> Run first move module => ref tới "Move Basic / firstpackage"
+- cd vào thư mục -> move new firstpackage => khởi tạo dự án mới là 1 package tên là "firstpackage"
+Nó sinh file config sẵn Move.toml (giống hardhat.config.js)
+- Code file move mới:
+Có 2 loại code là modules và script. Modules là code được 1 account published ra để chạy onchain, scripts giống như 1 contract có thể gọi các hàm của modules.
+Ta tạo 1 module mới gắn với 1 tk mà sẽ dùng publish module đó.
+Tạo struct, tạo hàm, tạo test cho hàm đó, khởi tạo biến struct, sử dụng module std in ra màn hình
+- Thêm các thư viện standard vào file config
+move build => để build
+move test => chạy hàm #[test] của mọi file.move trong thư mục
+Vì move support có thể viết unit test ngay trong file đó luôn với #[test]
+
+-> Nhiều phiên bản move khác không sử dụng file Move.toml mà dùng .mvconfig.json và nhiều thứ khác, nhưng về cú pháp code move đều là như nhau. Với các phiên bản khác đó, phải tải đúng compiler của nó và config file chuẩn
+
+-> Modules:
+Ta viết bao nhiêu modules cx được. Mỗi modules gắn với 1 tk và scripts chỉ truy cập được modules của tài khoản định nghĩa trong file config.
+Chạy ở local ta có thể set tk là gì cx được. Chạy trên public test phải set đúng tk của ta sẽ publish contract
+
+-> Keyword:
+has drop: 1 struct có has drop tức biến struct đó có thể bị xóa. Mặc định thì 1 struct k có has drop sẽ k thể bị xóa. VD ta khởi tạo biến struct local bth trong hàm, đến cuối hàm kết thúc, nó sẽ tự bị xóa đi, để tự xóa được biến local như v thì struct cũng phải có has drop. Nch là cứ có biến local trong hàm là phải có has drop
+
+has store, key: struct có khả năng lưu vào global storage on-chain với 1 key riêng để truy cập nhanh đánh indexed
+
+has copy: biến type này có khả năng copy value khi cần dùng. Mặc định là k có thì k thể copy value để truyền vào nhiều nơi mà value được lấy ra. Vd NFT hay các thứ khác thường set cho copy hay không.
+
+&mut Person: giả sử 1 params truyền vào hàm có type này thì nó là reference type Person mà có thể thay đổi (mutable). Mặc định bth truyền vào hàm là immutable sẽ k thể đổi giá trị biến reference
+
+assert! => nên set mỗi loại error 1 return error code riêng
+abort
+friend => A là friend B thì A có thể gọi public friend func của B
+
+-> Các chức năng như operator, vòng lặp,... đều như các ngôn ngữ khác
+
+-> Use tuples
+
+-> Use generic
+
+-> Use operator as
+
+
+
+# Use library
+Với các library dùng trong dự án, phải references đến dependencies của nó trong file config, nếu k sẽ bị lỗi use Unbound library.
+
+Có 2 thư viện standard library cơ bản phải có là:
+MoveNursery và MoveStdlib
+
+-> debug: là thư viện giúp in ra màn hình
+vector
+
+
+
+# Type and variables
+Primitive types có u8, u128, u64, address, bool
+
+Biến nào k dùng thì thêm prefix _ đằng trước để silence warning
+Có thể khai báo 1 biến nhiều lần
+
+-> u8: uint 8 bit
+
+Nếu k dùng thư viện ngoài, ta có thể biểu diễn string với type vector<u8> vì bản chất string là 1 chuỗi số thôi. Kiểu này nhận 2 loại giá trị là byte string và hex string
+Để dùng byte string: b"Richard" thì b là byte-encoded vector của string, nhận được escape sequence
+Còn hexstring vd là x"1982A242" => mỗi 2 số trải từ 00 đến FF biểu diễn hex code u8 value
+
+Tương tự có u64, u128
+Mặc định move thuần chỉ làm việc với số dương. Các framework khác của move có thể có giải pháp làm việc với số âm.
+
+-> Hằng số phải viết hoa tất cả
+
+
+
+# Use script
+use các module và gọi bth
+Chú ý mỗi script chỉ được chứa 1 function
+
+
+
+# Expression and scope
+Expression là 1 cục xử lý và có thể trả ra giá trị
+
+-> Block expression: có thể return value
+Mọi expression phải kết thúc bằng ;
+1 expression không kết thúc bằng ; thì đó là expression return value
+
+
+
+## Move Aptos
+# Basic
+-> Tương tác blockchain basic:
+URL: https://aptos.dev/tutorials/your-first-transaction
+
+Ta chỉ cần viết contract và cung ra được các hàm cho frontend gọi, code được server tương tác với contract để lấy thông số và call bằng pivkey. 
+Tương tác với chain mainnet, devnet, testnet, chỉ cần đổi NODE_URL và mainnet k có FaucetClient
+
+Example: transfer_coin, simple_nft  có thể gửi tiền và tạo nft và transfer nft bằng sdk có sẵn mà k cần code contract
+
+Example moon_coin  gồm code contract tự tạo coin riêng, deploy contract bằng script và chạy script tương tác với contract để transfer token đi
+Để dùng coin, owner phải register 1 CoinStore cho account của họ lưu đồng coin đó.
+Người publish package phải cùng address với CoinStore khi compile. Khi họ publish package sẽ gọi vào hàm init_module. Owner có quyền burn, freeze và mint coin
+
+Example fa_coin  tương tự giúp thao tác với NFT. Framework có nhiều hàm sẵn như:
+fungible_asset::transfer => chuyển FA giữa các unfrozen fungible store
+fungible_asset::transfer_with_ref => chuyển FA với TransferRef bất kể có fungible store có frozen hay không
+primary_fungible_store::transfer => chuyển FA giữa unfrozen primary store giữa các account khác nhau
+=> NFT thì mỗi người có 1 primary store biểu diễn balance của họ. Cũng như coin thì có CoinStore ấy.
+
+Example first_move_module https://aptos.dev/tutorials/first-move-module/
+Gồm từ tạo contract, tạo account, fund account, publish package, tương tác với contract tất cả bằng terminal
+Dường như contract lưu cái gì cũng phải tạo ra 1 store cho nó. Từ coin, nft cho tới message. Ta cũng tạo cả event
+
+-> Code Move Aptos
+Mỗi contract move khi deploy đều gắn với 1 địa chỉ. Package (contract) sẽ được compile và lưu vào user account địa chỉ đó. Khi chạy cli compile phải xđ địa chỉ, mặc định nó để trống "_" trong file toml
+
+Các tính năng như gửi tiền và thậm chí tạo và chuyển NFT nếu k config gì đều có sẵn trong sdk, ta có thể thao tác mà k cần code contract. Các thao tác với coin bth như min, transfer đã có sẵn trong framework module managedcoin mà k cần tự code hàm. Còn NFT phải tự code mọi hàm
+
+Trong aptos chỉ có 3 mạng là devnet, mainnet, testnet đều phân biệt bởi 3 rpc url riêng (hoặc tự chạy node) dễ dàng mà ta k cần config gì thêm.
+Ví aptos cũng có riêng với 3 mạng đó
+
+
+
+# Setup Aptos
+-> Cài aptos SDK: https://aptos.dev/tutorials/your-first-transaction
+Aptos SDK giúp tương tác mọi thứ với aptos
+
+Để chạy example typescript:
+Cài 1 phiên bản microsoft window buld tools trong VS
+Mở powershell quyền admin: npm install --global --production windows-build-tools
+Cài python và phải có trong env path
+Lỗi buildtool thì downgrade nodejs xuống hẳn version 10 để build. R có thể lại lên node16 để chạy
+
+--> SDK có thể chạy với 3 ngôn ngữ: Typescript, Python, Rust. Ta chỉ dùng typescript
+
+-> pnpm là tool replacement cho npm. Project đã có npm có thể dùng ngay pnpm sẽ cài nhanh hơn gấp 3 lần
+Cài sẵn khi đã có npm với: npm i -g pnpm
+
+Khi cài nvm, mọi package global đều gắn liền với từng phiên bản node.
+
+-> Cài aptos cli: giúp tương tác với chain, compile contract bằng cli luôn
+URL: https://aptos.dev/tools/install-cli/
+Install bằng wsl nên mọi lần chạy lệnh cli đều phải vào wsl để gọi. 
+
+
+
+# Move Aptos có sẵn
+-> Các module có sẵn: 
+Docs của từng module nằm trong file md thư mục docs của source code
+
+aptos_framework::managed_coin => script để initialize, mint, burn, transfer coin, để ta tạo ra coin riêng của mình mà k cần qt đến tính năng mint hay burn nữa
+aptos_framework::account => module giúp tạo ra account khi dùng cho hàm test
+aptos_framework::event => Module giúp tạo event, phát event, xử lý event gắn với 1 GUIDs
+aptos_framework::object => Module biểu diễn resource được lưu trong 1 single address là 1 complex type. Xét 2 loại resource trong address của người dùng: NFT or token lưu token data trong "Token resource" và object data trong "ObjectCore resource". Chính ObjectCorre cũng lưu address của current owner và data phù hợp để tạo event stream.
+aptos_framework::primary_fungible_store //!!!!!
+aptos_framework::fungible_asset //!!!!!
+std::signer
+std::unit_test
+std::vector
+std::string
+std::string::utf8
+std::error
+std::option
+
+-> Các type cơ bản
+aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset}
+aptos_framework::object::{Self, Object}
+u64 u8
+
+-> Keyword
+entry
+&mut
+has key, drop, store
+copy
+accquires
+
+

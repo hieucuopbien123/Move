@@ -1,0 +1,22 @@
+---
+compiled_package_info:
+  package_name: secondadvance
+  address_alias_instantiation:
+    std: "00000000000000000000000000000001"
+  source_digest: 81D2493EAB255D9C775EC2A72AB12D58D501ED3A3194907CABCA737DC909F94A
+  build_flags:
+    dev_mode: false
+    test_mode: false
+    generate_docs: false
+    generate_abis: false
+    install_dir: ~
+    force_recompilation: false
+    lock_file: ~
+    additional_named_addresses: {}
+    architecture: ~
+    fetch_deps_only: false
+    skip_fetch_latest_git_deps: false
+    bytecode_version: ~
+dependencies:
+  - MoveNursery
+  - MoveStdlib

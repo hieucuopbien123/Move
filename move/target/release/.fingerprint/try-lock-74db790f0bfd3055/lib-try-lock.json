@@ -1,0 +1,1 @@
+{"rustc":2347157018072859861,"features":"[]","target":5066707510535339615,"profile":6269190295429226618,"path":6542778389300443248,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release\\.fingerprint\\try-lock-74db790f0bfd3055\\dep-lib-try-lock"}}],"rustflags":["-C","link-arg=/STACK:8000000"],"metadata":12574327941339893785,"config":2202906307356721367,"compile_kind":0}

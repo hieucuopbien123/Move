@@ -1,0 +1,11 @@
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\serde_bytes-c3f4b2538891034f.rmeta: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytes.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\de.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\ser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytebuf.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\libserde_bytes-c3f4b2538891034f.rlib: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytes.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\de.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\ser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytebuf.rs
+
+C:\Users\Ryan.Nguyen\Downloads\Store\move\target\release\deps\serde_bytes-c3f4b2538891034f.d: C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\lib.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytes.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\de.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\ser.rs C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytebuf.rs
+
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\lib.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytes.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\de.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\ser.rs:
+C:\Users\Ryan.Nguyen\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_bytes-0.11.12\src\bytebuf.rs:
