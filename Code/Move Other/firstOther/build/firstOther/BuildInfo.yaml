@@ -1,0 +1,22 @@
+---
+compiled_package_info:
+  package_name: firstOther
+  address_alias_instantiation:
+    std: "00000000000000000000000000000001"
+  source_digest: EBDEC6000EC8758C430FA26E67414F07DECF43D1D0C6A4EDFBA7C5095123B9E6
+  build_flags:
+    dev_mode: false
+    test_mode: false
+    generate_docs: false
+    generate_abis: false
+    install_dir: ~
+    force_recompilation: false
+    lock_file: ~
+    additional_named_addresses: {}
+    architecture: ~
+    fetch_deps_only: false
+    skip_fetch_latest_git_deps: false
+    bytecode_version: ~
+dependencies:
+  - MoveNursery
+  - MoveStdlib

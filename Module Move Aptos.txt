@@ -1,0 +1,429 @@
+Move Aptos
+
+
+
+# Basic
+Docs dễ hiểu hơn của move aptos:
+https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/docs/move/book
+
+-> Tương tác blockchain basic:
+URL: https://aptos.dev/tutorials/your-first-transaction
+
+Ta chỉ cần viết contract và cung ra được các hàm cho frontend gọi, code được server tương tác với contract để lấy thông số và call bằng pivkey. 
+Tương tác với chain mainnet, devnet, testnet, chỉ cần đổi NODE_URL và mainnet k có FaucetClient
+
+Example: transfer_coin, simple_nft có thể gửi tiền và tạo nft và transfer nft bằng sdk có sẵn mà k cần code contract
+
+Example moon_coin  gồm code contract tự tạo coin riêng, deploy contract bằng script và chạy script tương tác với contract để transfer token đi
+Để dùng coin, owner phải register 1 CoinStore cho account của họ lưu đồng coin đó.
+Người publish package phải cùng address với CoinStore khi compile. Khi họ publish package sẽ gọi vào hàm init_module. Owner có quyền burn, freeze và mint coin
+
+Example fa_coin  tương tự giúp thao tác với NFT. Framework có nhiều hàm sẵn như:
+fungible_asset::transfer => chuyển FA giữa các unfrozen fungible store
+fungible_asset::transfer_with_ref => chuyển FA với TransferRef bất kể có fungible store có frozen hay không
+primary_fungible_store::transfer => chuyển FA giữa unfrozen primary store giữa các account khác nhau
+=> NFT thì mỗi người có 1 primary store biểu diễn balance của họ. Cũng như coin thì có CoinStore ấy.
+
+Example first_move_module https://aptos.dev/tutorials/first-move-module/
+Gồm từ tạo contract, tạo account, fund account, publish package, tương tác với contract tất cả bằng terminal
+Dường như contract lưu cái gì cũng phải tạo ra 1 store cho nó. Từ coin, nft cho tới message. Ta cũng tạo cả event
+Sau khi publish module, ta có thể gọi hàm qua cli và bắt được sự kiện, nên nhớ devnet cũng là publish netwrok của aptos nên vẫn tác động ra global
+
+Example Your First Dapp giúp publish module onchain và tương tác bằng giao diện connect ví bth
+Thao tác với hello_blockchain::message sau khi publish bởi account của ta sẽ chuyển thành <account>::message
+
+Example Your First Multisig viết contract upgradable nhưng mỗi tội dùng python sdk
+Rotation Proof Challenge là trường hợp xoay data thì chữ ký sẽ trở thành k hợp lệ, dù là xoay bất cứ 1 trường nhỏ nhất nào
+Rotate còn có nghĩa là biến đổi, nó chỉ cách biến 1 authentication key của 1 account bất kỳ thành authentication key của contract multisig hay bất cứ address của account nào khác (khi có sự đồng ý của cả 2 account). Thế là dùng address của account tùy ý làm address của contract multisig đươc.
+
+-> Code Move Aptos
+Mỗi contract move khi deploy đều gắn với 1 địa chỉ. Package (contract) sẽ được compile và lưu vào user account địa chỉ đó. Khi chạy cli compile phải xđ địa chỉ, mặc định nó để trống "_" trong file toml
+
+Các tính năng như gửi tiền và thậm chí tạo và chuyển NFT nếu k config gì đều có sẵn trong sdk, ta có thể thao tác mà k cần code contract. Các thao tác với coin bth như min, transfer đã có sẵn trong framework module managedcoin mà k cần tự code hàm. Còn NFT phải tự code mọi hàm
+
+Trong aptos chỉ có 3 mạng là devnet, mainnet, testnet đều phân biệt bởi 3 rpc url riêng (hoặc tự chạy node) dễ dàng mà ta k cần config gì thêm.
+Ví aptos cũng có riêng với 3 mạng đó
+
+-> Named address là address dùng tên. Trong compilation time sẽ được replace bởi giá trị thực. VD:
+script {
+  fun example() {
+    my_addr::m::foo(@my_addr);
+  }
+}
+=> Sau khi compile trở thành:
+script {
+  fun example() {
+    0xC0FFEE::m::foo(@0xC0FFEE);
+  }
+} => Nhưng ko equivalent, ta viết trực tiếp address như v sẽ sai
+
+
+
+# Setup Aptos
+-> Cài aptos SDK: https://aptos.dev/tutorials/your-first-transaction
+Aptos SDK giúp tương tác mọi thứ với aptos
+
+Để chạy example typescript:
+Cài 1 phiên bản microsoft window buld tools trong VS
+Mở powershell quyền admin: npm install --global --production windows-build-tools
+Cài python và phải có trong env path
+Lỗi buildtool thì downgrade nodejs xuống hẳn version 10 để build. R có thể lại lên node16 để chạy
+
+--> SDK có thể chạy với 3 ngôn ngữ: Typescript, Python, Rust. Ta chỉ dùng typescript
+
+-> pnpm là tool replacement cho npm. Project đã có npm có thể dùng ngay pnpm sẽ cài nhanh hơn gấp 3 lần
+Cài sẵn khi đã có npm với: npm i -g pnpm
+
+Khi cài nvm, mọi package global đều gắn liền với từng phiên bản node.
+
+-> Cài aptos cli: giúp tương tác với chain, compile contract bằng cli luôn
+URL: https://aptos.dev/tools/install-cli/
+Install bằng wsl nên mọi lần chạy lệnh cli đều phải vào wsl để gọi. 
+
+
+
+# Move Aptos có sẵn
+-> Các module có sẵn: 
+Docs của từng module nằm trong file md thư mục docs của source code
+
+aptos_framework::managed_coin => script để initialize, mint, burn, transfer coin, để ta tạo ra coin riêng của mình mà k cần qt đến tính năng mint hay burn nữa
+aptos_framework::account => module giúp tạo ra account khi dùng cho hàm test
+aptos_framework::event => Module giúp tạo event, phát event, xử lý event gắn với 1 GUIDs
+aptos_framework::object => Module biểu diễn resource được lưu trong 1 single address là 1 complex type. Xét 2 loại resource trong address của người dùng: NFT or token lưu token data trong "Token resource" và object data trong "ObjectCore resource". Chính ObjectCorre cũng lưu address của current owner và data phù hợp để tạo event stream.
+aptos_framework::primary_fungible_store cung implementation of FAs cung 2 type Metadata lưu thông tin FA, và FungibleStore lưu lượng đơn vị FA
+aptos_framework::fungible_asset cung framework define và manage FAs
+
+Còn lại các các thư viện trong standard lib:
+
+std::signer
+Có 2 hàm:
+signer::address_of(&signer): address => lấy address
+signer::borrow_address(&signer): &address => Lấy reference tới address
+
+std::unit_test
+
+std::vector: 
+URL mọi lệnh vector: https://aptos.dev/move/book/vector/
+Behavior của vector<T> phụ thuộc vào ability của struct T. VD T k có ability drop thì hàm số nhận type vector đó sẽ k thể kết thúc vì nếu kết thúc sẽ discard vector là báo lỗi. 
+Cách khác là dùng destroy_empty cho vector đó nếu vector đó empty thì được. Hoặc là T phải thêm drop
+Tương tự copy 1 vector có thể rất đắt, nên compiler yêu cầu T phải có type copy mới được copy type vector<T>
+
+std::string
+std::string::utf8
+std::error
+std::option
+
+-> Các type cơ bản
+aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset}
+aptos_framework::object::{Self, Object}
+u64 u8
+
+-> Keyword
+&mut
+has key, drop, store
+copy
+accquires
+
+-> Visibility:
+public: gọi được từ module khác, script, gọi trong cùng module
+entry: Nhẹ hơn public. Nó có thể invoke trực tiếp trong script hoặc module khác.
+Để mặc định thì mọi fun sẽ là internal chỉ gọi trong phạm vi module
+
+public(friend): gọi được từ cùng module hoặc từ các hàm trong module khác mà được định nghĩa trong friend list.
+VD: 
+address 0x42 {
+  module a {
+    friend 0x42::b;
+    friend 0x42::c;
+  }
+}
+Hoặc:
+address 0x42 {
+  module a {
+    use 0x42::b;
+    friend b;
+  }
+}
+1 module k thể friend tới 1 script và ngược lại
+
+
+
+# Rotate authentication key
+1 account trong aptos có: public address, public key, private key và authentication key có tác dụng verify các key và nhiều thứ khác. Aptos có cơ chế rotate private key, theo đó cũng sẽ đổi authentication key và public key nhưng public address vẫn là cố định với mỗi tk. 
+
+Mỗi thao tác cli có 1 profile phải tạo ra, mỗi lần tạo sẽ sinh ra file config về account gắn với profile đó trong .aptos/config.yaml => nó gắn với global or gắn với workspace trong 1 thư mục
+
+https://aptos.dev/guides/account-management/key-rotation => thay đổi private key của 1 account thành 1 account khác
+VD cả cli và typescript sdk
+
+
+
+# Resouces account
+Là tính năng quản lý resources đặc biệt là khi publish module hay ký tx. RA là chủ 1 resouces. 
+VD RA giúp module A cung signer cho module B, rồi module B có thể gọi hàm của module A qua signer đó.
+
+Trong aptos, 1 RA được tạo bởi SHA3-256 hash của sources address và additional seed data. 1 RA chỉ được tạo duy nhất cho 1 sources address và seed.
+
+-> init_module(account: &signer) là 1 hàm đặc biệt được gọi trong move aptos mỗi khi có 1 module được publised lần đầu tiên. Ta có thể viết trong module để nó gọi vào nếu cần initialize gì đó ngay khi published. Nó nhận signer là người publish. Hàm phải private và k trả ra giá trị gì cả
+
+-> Aptos CLI:
+aptos account create-resource-account tạo RA
+aptos move create-resource-account-and-publish-package tạo RA và published package bằng RA đó luôn
+
+-> SM code:
+create_resource_account tạo RA và dùng được RA
+create_resource_account_and_fund tạo RA và fund RA và dùng được RA
+create_resource_account_and_publish_package tạo RA và publish package, sau đó RA k thể access được nx
+retrieve_resource_account_cap lấy address của sources account (account mà tạo ra RA này)
+Tức người dùng có account riêng nhưng tạo được thêm RA để quản lý resouces sở hữu
+
+
+
+# Script
+Execute script và publish module là 2 operation khác nhau trong VM
+=> Hiện tại k chạy được script nếu dùng module do ta tự tạo, chỉ chạy được script dùng các module có sẵn của aptos thôi
+
+
+
+# Tổng hợp Aptos CLI
+aptos move compile --save-metadata --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=<addressuser> 
+=> Dùng compile contract
+--save-metadata là để lưu package metadata vào thư mục build, metadata này có thể dùng để xây tx publish package; 
+--named-addresses để truyền vào biến address. Vd: module abc::test{} thì abc phải là 1 address nhưng lúc mới code chưa deploy thì ta k biết nó là gì. Thêm --named-addresses abc=75ec08f65594df0477fee192a876568059ca5ec7815a63e54db269b405b3bc50 vào lúc compile để xđ. Cách khác là define nó trong file Move.toml thì k cần options này nữa nhưng như v sẽ fix cứng
+
+Ngắn gọn để compile, ta cd vào thư mục và chạy: aptos move compile --save-metadata --package-dir .
+
+=> Bản ngắn gọn nhất là: aptos move compile thì ta k sử dụng named address mà dùng TT address thôi
+
+aptos account create-resource-account --seed <SEED> => sinh 1 RA
+
+aptos move create-resource-account-and-publish-package --address-name <ADDRESS_NAME> --seed <SEED> => tạo 1 RA và publish package vào RA đó
+
+aptos init
+aptos init --network devnet => Tạo 1 profile có 1 tk riêng. Mọi thao tác với aptos cli sau đó sẽ là từ tk đó
+
+aptos move init --name run_script => Khởi tạo 1 project 
+
+-> Thêm --profile-gas vào move publish, move run, move run-script để lấy thông tin gas sử dụng nếu chạy các lệnh đó. Vd: aptos move publish --profile-gas
+
+aptos move publish --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=8946741e5c907c43c9e042b3739993f32904723f8e2d1491564d38959b59ac71
+=> Publish 1 package vói account address nào
+Hoặc publish với 1 tk cụ thể (phải cung pivkey):
+aptos move publish \
+  --named-addresses test_account=$ace_addr \
+  --private-key-file ace.key \
+  --assume-yes
+
+aptos move build-publish-payload \
+  --named-addresses test_account=$multisig_addr \
+  --json-output-file publication.json \
+  --assume-yes
+=> build và publish, output lưu vào file json
+
+--> aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::message::set_message --args string:hello!
+=> Sau khi module được publish, có thể gọi các hàm của nó thông qua aptos cli luôn
+Hoặc dùng tên thay address:
+aptos move run --function-id default::message::set_message --args string:hello!
+
+Khi hàm có generic, phải thêm --type-args
+aptos move run \
+  --function-id $ace_addr::cli_args::set_vals \
+  --type-args \
+    0x1::account::Account \
+    0x1::chain_id::ChainId \
+  --args \
+    u8:123 \
+    "bool:[false, true, false, false]" \
+    'address:[["0xace", "0xbee"], ["0xcad"], []]' \
+  --private-key-file ace.key \
+  --assume-yes
+
+Args nhiều có thể để vào file. VD entry_function_arguments.json:
+{
+  "function_id": "<test_account>::cli_args::set_vals",
+  "type_args": [
+    "0x1::account::Account",
+    "0x1::chain_id::ChainId"
+  ],
+  "args": [
+    {
+      "type": "u8",
+      "value": 123
+    },
+    {
+      "type": "bool",
+      "value": [false, true, false, false]
+    },
+    {
+      "type": "address",
+      "value": [
+        [
+          "0xace",
+          "0xbee"
+        ],
+        [
+          "0xcad"
+        ],
+        []
+      ]
+    }
+  ]
+}
+aptos move run \
+  --json-file entry_function_arguments.json \
+  --private-key-file ace.key \
+  --assume-yes
+
+Chạy hàm view:
+aptos move view \
+  --function-id $ace_addr::cli_args::reveal \
+  --type-args \
+    0x1::account::Account \
+    0x1::account::Account \
+  --args address:$ace_addr
+=> Tương tự chạy hàm script cũng có thể tạo file json riêng: https://aptos.dev/move/move-on-aptos/cli/
+
+-> aptos move test --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=<address>
+=> Chạy các hàm unit test trong module. Có thể dùng các module debug::print và debug::print_stack_trace trong hàm test để xem thông tin
+
+Ngắn gọn nhất là: aptos move test nếu address dùng TT rồi
+
+aptos move test --coverage => sinh test coverage
+aptos move test --coverage --filter vector => chỉ sinh test coverage cho module vector
+aptos move coverage source --module signer => chỉ test coverage cho module signer nhưng hiển thị hẳn code nó ra xem phần nào được cover luôn
+
+aptos move prove --package-dir aptos-move/move-examples/hello_prover/ 
+=> Trong aptos có Move Prover là verification tool cho move language. Nó check báo lỗi nếu các dependencies k được install đúng
+
+-> aptos move compile --named-addresses addr=cb265645385819f3dbe71aac266e319e7f77aed252cacf2930b68102828bf615 => compile tất cả contract trong project
+
+aptos move run-script --compiled-script-path build/run_script/bytecode_scripts/main.mv --args address:b078d693856a65401d492f99ca0d6a29a0c5c0e371bc2521570a86e40d95f823 --args u64:5
+=> Chạy 1 script với tham số. Nên nhớ script k được chứa custom module tự tạo
+
+aptos move run-script --script-path sources/my_script.move --args address:b078d693856a65401d492f99ca0d6a29a0c5c0e371bc2521570a86e40d95f823 --args u64:5
+=> Gom 2 câu lệnh trên thành 1
+
+-> aptos key generate --vanity-prefix 0xace --output-file ace.key => sinh key
+
+aptos account fund-with-faucet --account <address> => fund cho 1 account, chỉ dùng cho devnet và testnet
+
+-> Aptos có bộ câu lệnh riêng cho multisig account
+URL: https://aptos.dev/move/move-on-aptos/cli/
+
+Có thể lưu vào biến và lấy ngay với $<tên biến>. Vd:
+bee_addr=0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc
+aptos multisig create \
+  --additional-owners $bee_addr \
+  --num-signatures-required 2 \
+  --private-key-file ace.key \
+  --assume-yes
+=> Tạo 1 account multisig
+Hoặc truyền biến dạng string:
+aptos move view \
+  --function-id 0x1::multisig_account::num_signatures_required \
+  --args \
+    address:"$multisig_addr"
+
+aptos multisig create-transaction \
+  --multisig-address $multisig_addr \
+  --function-id $multisig_addr::cli_args::set_vals \
+  --type-args \
+    0x1::account::Account \
+    0x1::chain_id::ChainId \
+  --args \
+    u8:123 \
+    "bool:[false, true, false, false]" \
+    'address:[["0xace", "0xbee"], ["0xcad"], []]' \
+  --private-key-file bee.key \
+  --assume-yes
+=> Tạo 1 multisig transaction và submit lên blockchain, nó pass khi có đủ chữ ký
+
+aptos multisig verify-proposal \
+  --multisig-address $multisig_addr \
+  --json-file publication.json \
+  --sequence-number 1
+=> Verifying transaction proposal
+
+=> Sau khi 1 người verify thấy đúng r, chẳng hạn là bee, họ có thể vote yes:
+aptos multisig approve \
+  --multisig-address $multisig_addr \
+  --sequence-number 1 \
+  --private-key-file bee.key \
+  --assume-yes
+
+aptos multisig execute-with-payload \
+  --multisig-address $multisig_addr \
+  --json-file publication.json \
+  --private-key-file bee.key \
+  --max-gas 10000 \
+  --assume-yes
+=> Khi có đủ chữ ký rồi, 1 trong số các người trong multisig có thể tạo tx từ multisig account
+
+Cách bên trên thì chain chỉ cần lưu payload hash. Ta phải tự truyền payload thực lúc execute trong file json. Cách dưới là khi chain đã lưu payload rồi, ta chỉ cần gọi execute luôn:
+aptos multisig execute \
+  --multisig-address $multisig_addr \
+  --private-key-file ace.key \
+  --max-gas 10000 \
+  --assume-yes
+
+
+
+# Example module BasicCoin
+Thực tế aptos framework có module Coin riêng rất mạnh. VD này ta chỉ tạo lại ở mức cơ bản hơn
+
+Blockchain state của aptos thực chất là 1 cái global storage được lưu ở mỗi address. Mỗi address lưu "Move modules" (code) và "Move resouces" (values). VĐ structure của global storage:
+struct GlobalStorage {
+  resources: Map<address, Map<ResourceType, ResourceValue>>
+  modules: Map<address, Map<ModuleName, ModuleBytecode>>
+}
+=> Cũng đúng với quan điểm từ trước là mỗi address chỉ có 1 value với each type.
+
+Khi 1 address publish 1 module thì address đó trong global storage chứa cả move resouces và move modules. Còn các address khác có thể sở hữu move resouces của type đó nếu thực hiện các hàm transfer tói họ chẳng hạn.
+VD Ethereum: global storage - Contract address - state var Balances - address=>balances
+VD Aptos: global storage - address - module BasicCoin
+                                   - value BasicCoin::Balance{ value }
+
+first_module dùng Coin basic
+fourth_module dùng thêm module Balance
+sixth_module khiến nó generic
+=> Keyword phantom nếu 1 type xuất hiện mà k có định nghĩa struct cho nó ngay, Vd khi dùng generic, thì thêm phantom đằng trước thì k cần specify các thuộc tính has store, key cho từng loại generic nữa
+
+seventh dùng MSL
+Move prover là verification tools cho SM viết bằng Move. Ta phải thêm các specification cho các hàm muốn verify trong file.move bằng Move Specification Language (MSL).
+URL: https://github.com/move-language/move/blob/main/language/move-prover/doc/user/spec-lang.md
+Ta cũng phải cài Move Prover CLI: https://aptos.dev/tools/aptos-cli/install-cli/install-move-prover
+VD check hàm balance_of của module phải abort nêu gọi operation borrow_global mà owner k có resouces Balance<CoinType>
+spec balance_of {
+  pragma aborts_if_is_strict;
+  aborts_if !exists<Balance<CoinType>>(owner);
+}
+=> Sau đó run: aptos move prove
+
+Cái aborts_if thì các ĐK or với nhau. Nếu thêm ở đầu pragma aborts_if_is_partial thì sẽ aborts nếu partial bị sai
+let post <variable> để tạo variables sau execute
+ensure để check như bth
+result là biến lấy trực tiếp trong spec để lấy giá trị trả về của hàm mà check tiếp
+
+
+
+# Other
+-> Dừng series vì k có tính ứng dụng trong tương lai. Học tiếp từ:
+https://aptos.dev/move/book/abort-and-assert/
+
+-> TK:
+Cài move Diem và dùng move-cli
+Dùng basic của move như script, module, hàm bạn, abort, as, Tuple, function
+Dùng các tính chất của struct 
+Dùng address, signer, các thư viện standard
+Cách dùng copy, move và reference, dereference
+Cách config file Move.toml dùng thư viện ngoài, addresses
+Resouces, các dùng borrow
+Trong Aptos có Resouces Account, cách tạo RA cho 1 project
+Cài aptos và dùng aptos cli
+Cách tạo tk, compile, publish 1 module và tương tác với frontend trên các loại mạng
+Cách Rotate authentication key
+Tương tác multisig account trong aptos
+Dùng các modules có sẵn của aptos, tạo NFT, coin
+Cách tùy biến làm mọi thứ khi code aptos contract
+
+

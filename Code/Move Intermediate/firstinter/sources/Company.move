@@ -1,7 +1,11 @@
 // # Basic
 
 module 0x42::Company {
-  use std::vector;
+  // # Use library
+  use std::vector::{
+    Self,
+    push_back
+  };
   const CONTRACT:address = @0x42;
   struct Employees has drop{
     people: vector<Employee>

@@ -1,12 +1,14 @@
 // # Use script
 
-// Write this script to test. We don't need to use #[test] here
+// Write this script to test
 script {
   use 0x42::Company;
-  use std::debug;
+  use std::debug::{
+    print as PRINT
+  };
 
   fun do_stuff() {
     let info = Company::get_info(); // Info must have has drop
-    debug::print(&info);
+    PRINT(&info);
   }
 }

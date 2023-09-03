@@ -1,0 +1,15 @@
+[package]
+name = 'run_script'
+version = '1.0.0'
+authors = []
+
+[dev-addresses]
+[dependencies.AptosFramework]
+git = 'https://github.com/aptos-labs/aptos-core.git'
+rev = 'mainnet'
+subdir = 'aptos-move/framework/aptos-framework'
+
+[dev-dependencies]
+
+[addresses]
+addr = "75ec08f65594df0477fee192a876568059ca5ec7815a63e54db269b405b3bc50"

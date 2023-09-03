@@ -7,4 +7,5 @@ Move hoàn chỉnh hơn solidity. Static typing giúp phát hiện các lỗi �
 
 Aptos dễ dàng hơn khi thao tác với NFT. 
 
+-> Libra là blockchain gốc dùng move, sau đó nó đổi tên thành Diem. Aptos và Sui ra sau
 

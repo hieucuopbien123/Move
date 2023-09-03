@@ -2,7 +2,10 @@
 // # Type and variables
 
 script {
-  fun main() {
+  fun main(_a: address) {
+    // # Use library
+    use std::debug as Debug;
+
     let a = 10;
     let _ = 0x1; // int in hexa
     let a2 = 10u128; // Value is 10, type is u128
@@ -30,5 +33,16 @@ script {
       let c = 10;
       c*100
     }; // a got value of 1000 because no semicolon at c*100
+
+    // Use loop
+    let testLoop = 0;
+    loop {
+      testLoop = testLoop + 1;
+      if (testLoop == 2) {
+        break
+      }
+    };
+    Debug::print<u8>(&testLoop);
+    Debug::print(&0); // Always use &
   }
 }

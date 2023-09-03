@@ -46,10 +46,12 @@ Vì move support có thể viết unit test ngay trong file đó luôn với #[t
 Ta viết bao nhiêu modules cx được. Mỗi modules gắn với 1 tk và scripts chỉ truy cập được modules của tài khoản định nghĩa trong file config.
 Chạy ở local ta có thể set tk là gì cx được. Chạy trên public test phải set đúng tk của ta sẽ publish contract
 
+Dùng với use: use <publisher's address>::<module name>;
+
 -> Keyword:
 has drop: 1 struct có has drop tức biến struct đó có thể bị xóa. Mặc định thì 1 struct k có has drop sẽ k thể bị xóa. VD ta khởi tạo biến struct local bth trong hàm, đến cuối hàm kết thúc, nó sẽ tự bị xóa đi, để tự xóa được biến local như v thì struct cũng phải có has drop. Nch là cứ có biến local trong hàm là phải có has drop
 
-has store, key: struct có khả năng lưu vào global storage on-chain với 1 key riêng để truy cập nhanh đánh indexed
+has store, key: store tức struct có khả năng lưu vào global storage on-chain wallet. key tức struct có thể dùng như 1 key cho global storage operation.  
 
 has copy: biến type này có khả năng copy value khi cần dùng. Mặc định là k có thì k thể copy value để truyền vào nhiều nơi mà value được lấy ra. Vd NFT hay các thứ khác thường set cho copy hay không.
 
@@ -59,13 +61,29 @@ assert! => nên set mỗi loại error 1 return error code riêng
 abort
 friend => A là friend B thì A có thể gọi public friend func của B
 
+-> Use struct:
+struct là cách duy nhất định nghĩa 1 type mới trong move. Dùng struct chỗ khác với <publisher's address>::<module>
+1 struct có 4 tính năng cần xét: copy, store, key, drop
+
 -> Các chức năng như operator, vòng lặp,... đều như các ngôn ngữ khác
 
 -> Use tuples
 
 -> Use generic
+Kiểu generic có thể lồng trong kiểu generic khác
+Có thể định nghĩa generic nhiều type nhưng chẳng cần dùng hết các type
 
 -> Use operator as
+
+-> Use loop:
+loop chính là while(true)
+
+-> Quan trọng nhất là cơ chế dùng address:
+Ta chỉ có thể dùng address được định nghĩa trong file config .toml, đó là các address global đã deploy sẵn các module mà ta có thể ref tới dùng luôn
+Khi tham gia vào mạng sẽ có 1 address riêng gán cho ta, ta dùng nó tạo ra các module thì có thể dùng thêm address đó nữa thôi
+
+-> Use function: Trong các nền tảng còn có native funciton được định nghĩa bởi VM và các phiên bản move khác nhau sẽ có định nghĩa khác nhau. Các hàm này k có body và ta có thể ref tới dùng luôn. 
+VD 1 hàm native trong module Signer: native public fun borrow_address(s: &signer): &address;
 
 
 
@@ -74,9 +92,16 @@ Với các library dùng trong dự án, phải references đến dependencies c
 
 Có 2 thư viện standard library cơ bản phải có là:
 MoveNursery và MoveStdlib
+Các hàm sử dụng trong lib đều là native để ta dùng trong module
 
 -> debug: là thư viện giúp in ra màn hình
 vector
+
+Trong các bản khác ta thấy họ dùng kiểu 0x1::Debug là khi account 0x1 trong mạng deploy public module Debug để dùng và set trong file config mới được. Chứ môi trường local ta tải thư viện MoveNursery chạy sẽ dùng theo nó là account std 
+
+-> Khi chỉ import member, thêm Self sẽ giúp nó vừa dùng đươc như cũ, vừa dùng trực tiếp các hàm được import
+
+Dùng as
 
 
 
@@ -89,19 +114,112 @@ Có thể khai báo 1 biến nhiều lần
 -> u8: uint 8 bit
 
 Nếu k dùng thư viện ngoài, ta có thể biểu diễn string với type vector<u8> vì bản chất string là 1 chuỗi số thôi. Kiểu này nhận 2 loại giá trị là byte string và hex string
-Để dùng byte string: b"Richard" thì b là byte-encoded vector của string, nhận được escape sequence
-Còn hexstring vd là x"1982A242" => mỗi 2 số trải từ 00 đến FF biểu diễn hex code u8 value
+Để dùng byte string: b"Richard" thì b là byte-encoded vector của string, nhận được escape sequence. Ngoài ra còn có: \0  \\  \xHH  \" 
+Còn hexstring prefix là x, vd x"1982A242" => mỗi 2 số là 1 byte trải từ 00 đến FF biểu diễn hex code u8 value
 
-Tương tự có u64, u128
+Có thể viết value ngăn cách với _ như: 1_234_5678, 1_000u128, 0xAB_CD_12_35
+Có explicit cast với: (x as u8) hay (4/2 + 12345 as u256)
+
+Tương tự có u16, u32, u64, u128, u256
 Mặc định move thuần chỉ làm việc với số dương. Các framework khác của move có thể có giải pháp làm việc với số âm.
 
--> Hằng số phải viết hoa tất cả
+Các hàm: empty, length, push_back, pop_back. Còn có:
+Vector::borrow_mut<E>(v: &mut vector<E>, i: u64): &E; => lấy mutable reference của phần tử thứ i của vector v
+Tương tự có Vector::borrow() là immutable borrow
+
+-> Use constant: Có thể khởi tạo trong cấp độ script hoặc module
+Hằng số phải viết hoa tất cả
+
+-> Ownership and references:
+1 biến nằm trong 1 hàm nào sẽ thuộc về hàm đó (owner scope). Khi biến được move sang hàm khác thì hàm khác là owner của nó, khi đó hàm cũ k còn là owner sẽ k dùng được biến nữa
+1) Mặc định khi truyền biến vào hàm là ta đang move biến vào hàm và đổi owner. VD:
+let a: T = 1;
+M::value(a); // Tương đương M::value(move a);
+M::value(a); // K thể dùng được nữa vì biến a đã bị move sang hàm value
+
+public fun value(a: T): T {
+  a
+} // Ra khỏi đây là biến a bị xóa 
+
+2) Nếu muốn copy giá trị chứ k move thì phải dùng từ khóa copy:
+let a: T = 1;
+M::value(copy a);
+M::value(a); // Dùng được biến a vì function này vẫn là owner của nó 
+
+public fun value(a: T): T {
+  a
+}
+
+3) Dùng references sẽ giúp lấy ref biến gốc mà k chuyển ownership sang hàm khác, tốt hơn copy vì với large object, hàm copy sẽ rất tốn. VD:
+let a: T = 1;
+M::value(&a);
+M::value(&a); // Dùng ok
+
+public fun value(a: &T): &T {
+  a
+}
+
+4) Mặc định khi dùng như thế, giá trị của a pass qua hàm khác sẽ k thể bị thay đổi. Để đảm bảo chặt chẽ rằng dev thực sự muốn biến reference đổi giá trị, họ dùng &mut:
+let a: T = 1;
+M::value(&mut a);
+M::value(&mut a); // Dùng ok
+
+public fun value(a: &mut T): &mut T {
+  a
+}
+=> Các quy tắc áp dụng cho struct. Còn primitive type có ngoại lệ là ta pass by value vẫn sẽ trong owner scope hiện tại thôi, tức mặc định của nó dùng copy. Có thể chủ đích thêm move, & và &mut để có các tính chất trên
+Vì primitive type kích thước nhỏ nên mặc định nó dùng copy cho dễ
+
+-> Khi 1 biến được ref hoặc thuộc tính của nó được ref tới bởi 1 biến khác thì nó gọi là được borrowed. 
+1 biến được borrowed 1 lần trong scope hiện tại. Khi ta tạo ra biến borrow nó lần 2 thì biến borrow cũ bị xóa đi, Nếu ta vẫn cố dùng biến borrow cũ sẽ báo lỗi. 
+
+Dereference => kiểu biến phải có has copy
+Dùng * trước biến sẽ tạo ra copy của biến đó (biến phải có ability copy). Cái bị write vào cũng k thể tự drop nên cần có drop nữa
+Dùng *&<biến>.<field> sẽ tạo ra copy của field đó của biến đó
+
+-> Type signer
+Kiểu native của move chỉ có thuộc tính drop, k thể copy vì k có các thuộc tính copy, key, store. 
+signer k liên quan gì tới signature hay ký gì cả mà chỉ biểu diễn quyền của sender, tức có thể lấy address và truy cập resources của address đó. 
+
+Kiểu signer ta sẽ k tự khai báo trong code mà VM sẽ tự pass nó vào script để ta dùng. Đó là cách duy nhất.
+Tx script có thể có nhiều signer và nó luôn được pass trước các type khác, dùng khi script cần nhiều signer mới thực hiện được. VD:
+fun main(s1: signer, s2: signer, x: u64, y: u8) {}
+
+signer luôn là 1 reference. Dù các thư viện như DiemAccount access vào giá trị của signer nhưng các hàm sử dụng giá trị đó cũng luôn là private và k thể pass giá trị của signer tới nơi khác.
+
+Chú ý lúc trước thì native module toàn viết hoa nhưng giờ toàn viết thường
+
+-> address: đúng là là để biểu diễn vị trí trên global storage như kiểu đánh index ấy
+address dù là 256bit integer nhưng k thể được tạo ra từ int (vẫn có thể convert từ uint256). 
+Ở trong 1 expression, address phải dùng kiểu @<numerical_val> hoặc @<named address>
+Ở ngoài 1 expression, address dùng tương tự nhưng k có @ đằng trước
+
+VD: 
+let a5: address = @std; 
+let a6: address = @66;
+module 66::some_module { }
+
+Giá trị address có thể tương tác với global storage operation như: exists, borrow_global, borrow_global_mut và move_from
+Còn move_to thì k dùng address mà chỉ tương tác với kiểu signer
+=> Chú ý borrow_global_mut có thể dùng chỉ cần địa chỉ tức đổi được giá trị của mọi user. Nhưng vì bên ngoài chỉ tương tác được vói module bởi các hàm gọi trong module nên cần cung hợp lý, k để ai cũng đổi được value của ng khác.
+
+-> Convert Reference:
+URL convert từ reference mutable thành immutable: https://aptos.dev/move/book/references
+K hỗ trợ reference lồng nhau
+
+Hàm freeze(x) với x là &mut sẽ chuyển sang & thường. Thực tế việc convert này được thực hiện tự động implicitly mà k cần gọi hẳn hàm freeze ra.
+
+Reference k thể được lưu trong struct, tức là k thể nằm trong globalstorage luôn (Trong rust thì được lưu). NN là vì mọi value trong move đều phải được serialize để tồn tại trong program execution nhưng reference thì k thể. 
 
 
 
 # Use script
-use các module và gọi bth
-Chú ý mỗi script chỉ được chứa 1 function
+1 script chỉ chứa 1 function và được coi là main. Function này chính là 1 transaction khi thực hiện nên k thể trả về giá trị. Nó nên gọi các function khác trong các module đã được published.
+
+Để chạy script. VD: move sandbox run ./sources/index.move --args 0x1 => chạy script trong môi trường cách ly để test vì thực tế để chạy cần có 1 chain riêng cơ.
+=> move --help ra đầy lệnh hay
+
+Cơ chế address 
 
 
 
@@ -114,91 +232,52 @@ Mọi expression phải kết thúc bằng ;
 
 
 
+# Import thư viện move bên ngoài
+VD: MoveNursery = { git = "https://github.com/diem/move.git", subdir = "language/move-stdlib/nursery", rev = "main" }
+Mỗi khi chạy nó sẽ fetch thư viện về. 
+MoveNursery là tên package trên git, url, subdir là thư mục lấy lib, rev main là tên nhánh
+
+Các thư viện có liên quan đến nhau phải cùng chung git url
+Address được định nghĩa rõ trong file Move.toml trên git và ta lấy ra dùng
+
+Hiện tại có 2 lib basic nhất là https://github.com/diem/move.git và https://github.com/move-language/move.git y hệt nhau
+
+
+
+# Use Resources
+Resources là 1 giá trị bình thường có thể pass vào hàm, return ra hay lưu như 1 cấu trúc dữ liệu bth. Trước nó là 1 kiểu riêng, nhưng vì mở rộng ra nhiều tính năng nên nó dần trở nên abstract hơn.
+
+Move cung các cơ chế đảm bảo an toàn cho resources. Resources k thể duplicate, reuse, discard nhưng vẫn có thể lưu và transfer giữa các accounts. Nó chỉ có thể được tạo và hủy bởi chính module định nghĩa nó. Để làm được điều này, Move VM sẽ chỉ chạy code sau khi được pass qua bytecode verifier. Do đó resources là kiểu lý tưởng để lưu digital assets
+Tức Resources chỉ có key và store ability. Key giúp nó lưu ở top level của storage và store giúp nó lưu trữ được theo top-level key đó => nên nhớ primitive type mặc định cũng có store ability nên ta mới lưu được nhưng nó k có key ability nên k thể lưu ở top level container.
+
+Mọi currencies trong Diem đều được implement dùng generic type Diem::T
+VD: Diem::T<USD::T> hay Diem::T<LBR::T>
+
+- Resoures được lưu trong account nên chỉ tồn tại khi được assigned to account và chỉ access bởi account đó. 
+- Account chỉ có thể lưu 1 resouces của 1 type cụ thể và resouces này phải có key ability.
+- Giá trị của resouces phải được sử dụng. Cụ thể là khi resouces mới được tạo hoặc lấy từ 1 account, nó k thể dropped nên phải được stored hoặc destructured (vì nếu k thì khi hàm kết thúc sẽ tự bị drop là sai ability). Ta có thể destructured nó và các thành phần bên trong bị drop là hủy được resources
+
+-> Create my own Collection resouces
+Khi dùng resources nên chơi kiểu tên module trùng tên với main resources và khi truy cập tới resouces sẽ dùng kiểu VD Collection::Collection thì sẽ dễ dùng hơn về sau
+
+Hàm move_to có sẵn của signer giúp move 1 resouces vào 1 account nào (1 trong 5 global storage operation của move)
+- Ta chỉ có thể move resouces vào account của ta vì ta k thể access vào signer của người khác. 
+- K thể gọi hàm 2 lần trên public chain vì 1 account k thể lưu 1 resouces cùng type. Thực hiện lần thứ 2 sẽ xóa toàn bộ resouces cũ và thay vào resouces mới, điều này là k nên xảy ra. Thử tưởng tượng ta có coins xong xóa nhầm đi và set lại empty balance chẳng hạn.
+
+--> borrow_global trả về 1 immutable reference tới resources nào của 1 address. Tức hàm này có thể đọc bất cứ resouces của 1 address nào vì truyền vào kiểu address chứ kp kiểu signer.
+Sau khi lấy được resources ta k thể dereference content của nó với * vì nó resouces k có copy ability
+Khi sử dụng hàm borrow, ta k thể return reference tới resouces hoặc content của nó vì khi scope end, reference tới resouces sẽ mất => Nên nhớ dù 1 kiểu k có drop ability và luôn tồn tại mãi, nhưng ta có thể tạo ra reference tới nó để lấy giá trị và khi kết thúc scope, reference mất (chứ bản thân resouces k mất).
+
+Dùng borrow_global_mut để lấy mutable reference tới resouces nào của 1 address. Khi đó ta có thể thêm data vào thoải mái
+Ta nghĩ nó vẫn thỏa mãn 1 người k thể thay đổi resouces của 1 address bất kỳ mà chỉ thay đổi của chính họ thôi. 
+
+move_from sẽ lấy resouces khỏi account để destroy content bên trong, từ đó destroy resouces
+
+--> Keyword accquires được đặt sau return type của 1 function để xđ những resouces được accquired bởi function đó. 
+Kể cả nested function accquired resouces thì function cũng phải khai báo accquires đầy đủ
+
+
+
 ## Move Aptos
-# Basic
--> Tương tác blockchain basic:
-URL: https://aptos.dev/tutorials/your-first-transaction
-
-Ta chỉ cần viết contract và cung ra được các hàm cho frontend gọi, code được server tương tác với contract để lấy thông số và call bằng pivkey. 
-Tương tác với chain mainnet, devnet, testnet, chỉ cần đổi NODE_URL và mainnet k có FaucetClient
-
-Example: transfer_coin, simple_nft  có thể gửi tiền và tạo nft và transfer nft bằng sdk có sẵn mà k cần code contract
-
-Example moon_coin  gồm code contract tự tạo coin riêng, deploy contract bằng script và chạy script tương tác với contract để transfer token đi
-Để dùng coin, owner phải register 1 CoinStore cho account của họ lưu đồng coin đó.
-Người publish package phải cùng address với CoinStore khi compile. Khi họ publish package sẽ gọi vào hàm init_module. Owner có quyền burn, freeze và mint coin
-
-Example fa_coin  tương tự giúp thao tác với NFT. Framework có nhiều hàm sẵn như:
-fungible_asset::transfer => chuyển FA giữa các unfrozen fungible store
-fungible_asset::transfer_with_ref => chuyển FA với TransferRef bất kể có fungible store có frozen hay không
-primary_fungible_store::transfer => chuyển FA giữa unfrozen primary store giữa các account khác nhau
-=> NFT thì mỗi người có 1 primary store biểu diễn balance của họ. Cũng như coin thì có CoinStore ấy.
-
-Example first_move_module https://aptos.dev/tutorials/first-move-module/
-Gồm từ tạo contract, tạo account, fund account, publish package, tương tác với contract tất cả bằng terminal
-Dường như contract lưu cái gì cũng phải tạo ra 1 store cho nó. Từ coin, nft cho tới message. Ta cũng tạo cả event
-
--> Code Move Aptos
-Mỗi contract move khi deploy đều gắn với 1 địa chỉ. Package (contract) sẽ được compile và lưu vào user account địa chỉ đó. Khi chạy cli compile phải xđ địa chỉ, mặc định nó để trống "_" trong file toml
-
-Các tính năng như gửi tiền và thậm chí tạo và chuyển NFT nếu k config gì đều có sẵn trong sdk, ta có thể thao tác mà k cần code contract. Các thao tác với coin bth như min, transfer đã có sẵn trong framework module managedcoin mà k cần tự code hàm. Còn NFT phải tự code mọi hàm
-
-Trong aptos chỉ có 3 mạng là devnet, mainnet, testnet đều phân biệt bởi 3 rpc url riêng (hoặc tự chạy node) dễ dàng mà ta k cần config gì thêm.
-Ví aptos cũng có riêng với 3 mạng đó
-
-
-
-# Setup Aptos
--> Cài aptos SDK: https://aptos.dev/tutorials/your-first-transaction
-Aptos SDK giúp tương tác mọi thứ với aptos
-
-Để chạy example typescript:
-Cài 1 phiên bản microsoft window buld tools trong VS
-Mở powershell quyền admin: npm install --global --production windows-build-tools
-Cài python và phải có trong env path
-Lỗi buildtool thì downgrade nodejs xuống hẳn version 10 để build. R có thể lại lên node16 để chạy
-
---> SDK có thể chạy với 3 ngôn ngữ: Typescript, Python, Rust. Ta chỉ dùng typescript
-
--> pnpm là tool replacement cho npm. Project đã có npm có thể dùng ngay pnpm sẽ cài nhanh hơn gấp 3 lần
-Cài sẵn khi đã có npm với: npm i -g pnpm
-
-Khi cài nvm, mọi package global đều gắn liền với từng phiên bản node.
-
--> Cài aptos cli: giúp tương tác với chain, compile contract bằng cli luôn
-URL: https://aptos.dev/tools/install-cli/
-Install bằng wsl nên mọi lần chạy lệnh cli đều phải vào wsl để gọi. 
-
-
-
-# Move Aptos có sẵn
--> Các module có sẵn: 
-Docs của từng module nằm trong file md thư mục docs của source code
-
-aptos_framework::managed_coin => script để initialize, mint, burn, transfer coin, để ta tạo ra coin riêng của mình mà k cần qt đến tính năng mint hay burn nữa
-aptos_framework::account => module giúp tạo ra account khi dùng cho hàm test
-aptos_framework::event => Module giúp tạo event, phát event, xử lý event gắn với 1 GUIDs
-aptos_framework::object => Module biểu diễn resource được lưu trong 1 single address là 1 complex type. Xét 2 loại resource trong address của người dùng: NFT or token lưu token data trong "Token resource" và object data trong "ObjectCore resource". Chính ObjectCorre cũng lưu address của current owner và data phù hợp để tạo event stream.
-aptos_framework::primary_fungible_store //!!!!!
-aptos_framework::fungible_asset //!!!!!
-std::signer
-std::unit_test
-std::vector
-std::string
-std::string::utf8
-std::error
-std::option
-
--> Các type cơ bản
-aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset}
-aptos_framework::object::{Self, Object}
-u64 u8
-
--> Keyword
-entry
-&mut
-has key, drop, store
-copy
-accquires
 
 

@@ -3,7 +3,7 @@ compiled_package_info:
   package_name: firstinter
   address_alias_instantiation:
     std: "00000000000000000000000000000001"
-  source_digest: 71786F91705852A8012A6DD5020B180C78AC384745D891F7E34B9A38125C02CD
+  source_digest: C6C08572352FB61538C56BAC054AA3AD3C39A3D50A110EFF74B79DB68C4C02BB
   build_flags:
     dev_mode: false
     test_mode: false

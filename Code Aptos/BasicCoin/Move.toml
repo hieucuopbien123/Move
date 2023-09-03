@@ -1,0 +1,10 @@
+[package]
+name = "basic_coin"
+version = "0.0.0"
+
+[addresses]
+named_addr = "0xCAFE"
+
+# Use git url will be very long, I copy it to local like this
+[dependencies]
+AptosFramework = { local = "./framework/aptos-framework" }
