@@ -54,6 +54,7 @@ has drop: 1 struct có has drop tức biến struct đó có thể bị xóa. M�
 has store, key: store tức struct có khả năng lưu vào global storage on-chain wallet. key tức struct có thể dùng như 1 key cho global storage operation.  
 
 has copy: biến type này có khả năng copy value khi cần dùng. Mặc định là k có thì k thể copy value để truyền vào nhiều nơi mà value được lấy ra. Vd NFT hay các thứ khác thường set cho copy hay không.
+Khi gọi (copy x) thì bản thân biến x sau khi kết thúc hàm sẽ bị xóa nếu k truyền reference tới nơi nào khác nên struct cũng cần có has drop
 
 &mut Person: giả sử 1 params truyền vào hàm có type này thì nó là reference type Person mà có thể thay đổi (mutable). Mặc định bth truyền vào hàm là immutable sẽ k thể đổi giá trị biến reference
 
@@ -68,6 +69,11 @@ struct là cách duy nhất định nghĩa 1 type mới trong move. Dùng struct
 -> Các chức năng như operator, vòng lặp,... đều như các ngôn ngữ khác
 
 -> Use tuples
+Trong lập trình nch, tuple là từ chung để lưu data nhiều kiểu khác nhau 1 cách có thứ tự. Nó kp là 1 kiểu dữ liệu cụ thể, có thể dùng lưu vào biến, truyền vào hàm or là return của hàm, hay làm key cho map, k cần tạo 1 struct riêng
+Vd: my_tuple = (1, "Hello", 3.14); 
+
+Trong Move cũng có tuple nhưng dùng rất hạn chế. Nó coi tuple k exist at runtime. 
+VD move k cho lưu reference vào struct, mà có function cần return multiple reference. Khi đó có thể cho function return tuple chứa multi reference ok
 
 -> Use generic
 Kiểu generic có thể lồng trong kiểu generic khác
@@ -84,6 +90,35 @@ Khi tham gia vào mạng sẽ có 1 address riêng gán cho ta, ta dùng nó t�
 
 -> Use function: Trong các nền tảng còn có native funciton được định nghĩa bởi VM và các phiên bản move khác nhau sẽ có định nghĩa khác nhau. Các hàm này k có body và ta có thể ref tới dùng luôn. 
 VD 1 hàm native trong module Signer: native public fun borrow_address(s: &signer): &address;
+
+-> Equality operator
+== and != ss sẽ bỏ qua immutable hay mutable. Nó tự động gọi freeze hết để chuyển về immubtable rồi ss
+
+Vấn đề: 
+Khi ta ss 2 giá trị, tức dùng giá trị ở trong hàm, 2 giá trị đó khi ra khỏi hàm sẽ bị xóa. Tức nếu ta ss 2 struct với nhau thì struct đó phải có drop ability.
+VD lỗi:
+address 0x42 {
+  module example {
+      struct Coin has store { value: u64 }
+      fun invalid(c1: Coin, c2: Coin) {
+        c1 == c2 // ERROR!
+//      ^^    ^^ These resources would be destroyed!
+      }
+  }
+}
+=> Để fix thì trước khi end function, ta cần chuyển ownership và giá trị c1, c2 chỉ được destroyed bởi hàm của chính module đó thôi. 
+Nhưng cách khác là ta có thể borrow nó rồi ss thay vì trực tiếp ss giá trị. Và reference thoát khỏi hàm thoải mái mà k sợ drop ability vì nó là biến cũ chứ kp mới copy tạo ra và thoát khỏi hàm là bị xóa
+=> Người ta khuyên nên luôn dùng ss với reference để tránh tạo ra nhiều expensive copy chỉ để ss và k bị ràng buộc bởi drop ability nữa
+
+-> Expression block
+--> Expression gán bằng trả về 1 tuple rỗng (). Kiểu tuple rỗng cũng có thể là kiểu trả về của 1 function. VD:
+fun x(): () { let x; x = 1 }
+
+--> Expression block có kết quả là value của express cuối cùng. VD: { let x; let y = 1; x = 1; x + y } trả ra kết quả là x + y và có thể gán cho biến. Khi expression đó k có dấu chấm phẩy ở cuối
+Ra khỏi expression block, biến local sẽ bị xóa nên struct local cần có drop ability
+
+VD: { x = x + 1; 1 / x; }  <==> { x = x + 1; 1 / x; () }
+Ta coi kiểu tuple rỗng () chính là kiểu void được
 
 
 
@@ -229,6 +264,44 @@ Expression là 1 cục xử lý và có thể trả ra giá trị
 -> Block expression: có thể return value
 Mọi expression phải kết thúc bằng ;
 1 expression không kết thúc bằng ; thì đó là expression return value
+
+-> Local Variables
+Local var được định nghĩa bằng từ khóa let. Có thể gán giá trị trực tiếp hoặc thông qua mutable reference.
+K được start bằng uppercase. Phải gán giá trị trước khi sử dụng. 
+
+--> Destructuring against reference
+
+--> Khi shadow biến struct, biến struct cũng phải có drop ability.
+Shadow xảy ra khi khai báo 2 lần cùng 1 biến với let, thì biến cũ sẽ bị xóa bỏ
+
+Shadow trong 1 blockscope thì khác, nó như tạo 1 biến mới trong block và ra ngoài block lại dùng được biến cũ
+
+--> copy và move
+Local var luôn được copy hoặc move mỗi khi sử dụng. Compiler tự động chèn vào implicitly.
+VD: let x = 0;
+let y = copy x + 1;
+let z = copy x + 2;
+
+Ngược lại nếu ta tự ý dùng move. Thì move sẽ lấy giá trị khỏi local var và ta k thể dùng local var đó nữa. Để dùng ta phải gán tiếp reference vào biến khác. VD:
+let x = 1;
+let y = move x + 1;
+let z = move x + 2; // Error! vì giá trị của x đã k còn lưu trong biến x
+
+Việc chọn move hay copy là do compiler tự quyết với quy tắc đơn giản: mặc định scalar có copy và mọi loại reference sẽ đều dùng copy; Còn lại các TH đều là move
+
+let s = b"hello";
+let foo = Foo { f: 0 };
+let coin = Coin { value: 0 };
+let s2 = s; // move vì k là scalar
+let foo2 = foo; // move vì k là scalar
+let coin2 = coin; // move vì k là scalar
+
+let x = 0;
+let x_ref = &x;
+let coin_ref = &mut coin2;
+let x2 = x; // copy vì là scalar
+let x_ref2 = x_ref; // copy
+let coin_ref2 = coin_ref; // copy vì mọi reference đều tự dùng copy
 
 
 
